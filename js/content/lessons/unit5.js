@@ -38,14 +38,22 @@ Line 1 uses the B string. Line 2 uses the D string, where F3 is fret 3.` },
       { type: 'text', md: `Your ear follows the top note of a chord as if it were a melody. So the top note matters more than any other.
 
 A **drop-2 voicing** takes a close four-note chord and drops its second-highest note an octave. That opens up the spacing, so the chord fits across four neighbouring strings and sounds full instead of cramped. These shapes sit on the top four strings, with the root on the D string.` },
-      { type: 'chords', refs: ['m7_d2@D', 'dom7_d2@G', 'maj7_d2@C'], showNotes: true, caption: 'Dm7, G7, Cmaj7 in drop-2 form. Look at the top note of each.' },
-      { type: 'text', md: `The top notes here are F, B and E. Each chord has its 3rd on top, so the top line is the 3rds of the chord. It leaps, and that gives it a bold, singing quality.
+      { type: 'chords', refs: ['m7_d2@D', 'dom7_d2@G', 'maj7_d2@C'], showNotes: true, caption: 'Dm7, G7, Cmaj7 with the root in the bass. Correct, but your hand jumps up the neck.' },
+      { type: 'text', md: `Those three shapes all keep the root at the bottom. The chords are right, but you jump from the open position to fret 5 to fret 10. A keyboard player would never move like that.
 
-Play each shape and sing the top note out loud. If you can sing it, you can hear it. Then try playing only the top two strings of each shape. It sounds like a tiny melody.
+Now the same three chords, played as **inversions** in one spot around fret 3. The root is no longer always the lowest note. In return, every note moves by one fret or stays put:
 
-In the next lesson we will find a smoother path.` },
-      { type: 'listen', label: 'Hear the three', refs: ['m7_d2@D', 'dom7_d2@G', 'maj7_d2@C'], mode: 'strum' },
-      { type: 'exercise', spec: { kind: 'progression', refs: ['m7_d2@D', 'dom7_d2@G', 'maj7_d2@C'], bpm: 60, beatsPerChord: 4, bars: 12 } },
+- D string: F, F, E
+- G string: C, B, B
+- B string: D, D, C
+- High e: A, G, G
+
+Notice the D and G strings. Those are the two guide-tone lines from the last lesson, hiding inside the chords. The top note falls A, G, G, a little melody of its own.` },
+      { type: 'chords', refs: ['Dm7_d2', 'G7_d2', 'Cmaj7_d2'], showNotes: true, caption: 'Dm7, G7, Cmaj7 voice-led on the top four strings. Small moves, one hand position.' },
+      { type: 'listen', label: 'Root position (jumpy)', refs: ['m7_d2@D', 'dom7_d2@G', 'maj7_d2@C'], mode: 'strum' },
+      { type: 'listen', label: 'Voice-led (smooth)', refs: ['Dm7_d2', 'G7_d2', 'Cmaj7_d2'], mode: 'strum' },
+      { type: 'text', md: `Play the voice-led set and sing the top note as you go. If you can sing it, you can hear it. Then try only the top two strings of each shape. It sounds like a tiny duet.` },
+      { type: 'exercise', spec: { kind: 'progression', refs: ['Dm7_d2', 'G7_d2', 'Cmaj7_d2'], bpm: 60, beatsPerChord: 4, bars: 12 } },
     ],
   },
   {

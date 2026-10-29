@@ -20,7 +20,7 @@ export function injectStyle() {
   s.id = 'ex-style';
   s.textContent = `
 .ex-prompt{font-family:var(--font-display);font-size:1.2rem;line-height:1.3}
-.ex-opt{min-height:44px}
+.ex-opt{min-height:44px;font-family:var(--font-body)}
 .ex-opts{display:flex;flex-wrap:wrap;gap:var(--space-2)}
 .ex-opt.right{border-color:var(--good);color:var(--good)}
 .ex-opt.wrong{border-color:var(--bad);color:var(--bad)}

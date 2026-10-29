@@ -100,7 +100,7 @@ After you build one, name each note and ask: is the 3rd there? Is the 7th there?
         { q: 'Which two notes are the guide tones of a chord?', options: ['Root and 5th', '3rd and 7th', '5th and 9th', 'Root and 3rd'], answer: 1, explain: 'The 3rd and 7th define the quality, so they come first.' },
         { q: 'What are the 3rd and 7th of Dm7?', options: ['F and C', 'F and B', 'E and C', 'F# and C'], answer: 0, explain: 'D minor has F as its 3rd, and the minor 7th above D is C.' },
         { q: 'What are the 3rd and 7th of G7?', options: ['B and F', 'Bb and F', 'B and F#', 'D and F'], answer: 0, explain: 'G7 has a major 3rd (B) and a flat 7th (F).' },
-        { q: 'Which colour note is safest to add to Cmaj7?', options: ['D (the 9th)', 'F (the 11th)', 'Bb', 'Db'], answer: 0, explain: 'The F sits a half step above the 3rd (E) and rubs against it.' },
+        { q: 'Which colour note is safest to add to Cmaj7?', options: ['D (the 9th)', 'F (the 11th)', 'Bb', 'Db'], answer: 0, explain: 'D, the 9th, sits comfortably on top. F, the 11th, is a half step above the 3rd (E) and rubs against it.' },
         { q: 'Which note can you usually drop first from a bigger chord?', options: ['3rd', '7th', '5th', 'Colour tone'], answer: 2, explain: 'The 5th adds little to the sound, and it takes up space.' },
       ] } },
       { type: 'text', md: `Take away: pick a chord you know the name of, build it with this rule on the A string and the D string, and play it. You have just invented a voicing.` },

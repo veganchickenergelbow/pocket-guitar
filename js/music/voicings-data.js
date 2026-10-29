@@ -24,6 +24,9 @@ const RAW = [
   F('Dsus2_open', 'D', 'sus2', 'xx0230'), F('Asus2_open', 'A', 'sus2', 'x02200'),
   F('Dsus4_open', 'D', 'sus4', 'xx0233'), F('Asus4_open', 'A', 'sus4', 'x02230'),
   F('CG_slash', 'C', 'maj', '332010', '', 'C/G'), F('Fsharpdim7', 'F#', 'dim7', '2x121x'),
+  // Voice-led drop-2 ii-V-I in C on the top four strings (each voice moves a fret at most).
+  F('Dm7_d2', 'D', 'm7', 'xx3535', 'xx1314'), F('G7_d2', 'G', '7', 'xx3433', 'xx1211'),
+  F('Cmaj7_d2', 'C', 'maj7', 'xx2413', 'xx2413'),
 ];
 
 export const FIXED = RAW.map((v) => ({

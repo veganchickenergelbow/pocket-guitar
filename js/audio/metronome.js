@@ -5,10 +5,32 @@ const LOOKAHEAD = 0.12; // seconds scheduled ahead
 const TICK_MS = 25;
 
 /**
- * @param {{bpm?: number, beatsPerBar?: number, onBeat?: (beat: number, bar: number) => void}} [opts]
- * @returns {{start: () => Promise<void>, stop: () => void, setBpm: (n: number) => void, isRunning: () => boolean}}
+ * Normalise a click pattern to length beatsPerBar. Default: accent on beat 0, click elsewhere.
+ * @param {number} beatsPerBar
+ * @param {string[]|null} [pattern]
+ * @returns {('accent'|'click'|'mute')[]}
  */
-export function createMetronome({ bpm = 80, beatsPerBar = 4, onBeat } = {}) {
+export function patternFor(beatsPerBar, pattern) {
+  const ok = (v) => v === 'accent' || v === 'click' || v === 'mute';
+  return Array.from({ length: beatsPerBar }, (_, i) =>
+    (Array.isArray(pattern) && ok(pattern[i])) ? pattern[i] : (i === 0 ? 'accent' : 'click'));
+}
+
+/**
+ * Clicks on 2 and 4 only (beats 1 and 3 silent).
+ * @param {number} beatsPerBar
+ * @returns {('accent'|'click'|'mute')[]}
+ */
+export function backbeatPattern(beatsPerBar) {
+  return Array.from({ length: beatsPerBar }, (_, i) => (i % 2 === 1 ? 'accent' : 'mute'));
+}
+
+/**
+ * @param {{bpm?: number, beatsPerBar?: number, onBeat?: (beat: number, bar: number) => void, pattern?: string[]}} [opts]
+ * @returns {{start: () => Promise<void>, stop: () => void, setBpm: (n: number) => void, setPattern: (arr: string[]) => void, isRunning: () => boolean}}
+ */
+export function createMetronome({ bpm = 80, beatsPerBar = 4, onBeat, pattern } = {}) {
+  let clicks = patternFor(beatsPerBar, pattern);
   let tempo = bpm;
   let running = false;
   let timer = 0;
@@ -41,7 +63,8 @@ export function createMetronome({ bpm = 80, beatsPerBar = 4, onBeat } = {}) {
     if (!ctx || !running) return;
     while (nextTime < ctx.currentTime + LOOKAHEAD) {
       const b = beat, r = bar, when = nextTime;
-      click(ctx, when, b === 0);
+      const kind = clicks[b];
+      if (kind !== 'mute') click(ctx, when, kind === 'accent');
       if (onBeat) {
         const id = setTimeout(() => { timeouts.delete(id); if (running) onBeat(b, r); },
           Math.max(0, (when - ctx.currentTime) * 1000));
@@ -73,6 +96,7 @@ export function createMetronome({ bpm = 80, beatsPerBar = 4, onBeat } = {}) {
       timeouts.clear();
     },
     setBpm(n) { tempo = Math.max(20, Math.min(300, Number(n) || tempo)); },
+    setPattern(arr) { clicks = patternFor(beatsPerBar, arr); },
     isRunning() { return running; },
   };
 }

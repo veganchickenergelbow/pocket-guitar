@@ -3,7 +3,7 @@ import { h, button, injectStyle } from './_ui.js';
 import { resolveVoicing } from '../music/voicings.js';
 import { voicingMidis } from '../music/theory.js';
 import { chordDiagram } from '../ui/diagram.js';
-import { createMetronome } from '../audio/metronome.js';
+import { createMetronome, backbeatPattern } from '../audio/metronome.js';
 
 const BEATS_PER_BAR = 4;
 
@@ -38,7 +38,8 @@ export function mount(container, spec, ctx) {
   const doneBtn = button('I played it through', 'btn btn-ghost', () => { stopAll(); ctx.onComplete?.({ passed: true }); status.textContent = 'Marked done.'; });
   const r1 = h('div', 'row'); r1.append(playBtn, demoBtn);
   const r2 = h('div', 'row'); r2.append(slower, tempo, faster);
-  root.append(now, dots, r1, r2, status, doneBtn);
+  const hint = spec.backbeat ? h('p', 'muted small', 'Clicks on 2 and 4') : null;
+  root.append(now, dots, r1, r2, ...(hint ? [hint] : []), status, doneBtn);
   container.append(root);
   show(0, -1);
 
@@ -65,6 +66,7 @@ export function mount(container, spec, ctx) {
     beat = 0;
     metro = createMetronome({
       bpm, beatsPerBar: BEATS_PER_BAR,
+      pattern: spec.backbeat ? backbeatPattern(BEATS_PER_BAR) : undefined,
       onBeat: () => {
         if (dead) return;
         if (beat >= totalBeats) { stopAll(); status.textContent = 'That is the pass. Go again or mark it done.'; return; }

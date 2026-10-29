@@ -1,4 +1,6 @@
 // Karplus-Strong plucked guitar. Each note is rendered offline into an AudioBuffer (cached per midi).
+import { setPlayback } from './session.js';
+
 /** @type {AudioContext|null} */
 let ac = null;
 /** @type {GainNode|null} */
@@ -37,6 +39,7 @@ function buildGraph() {
  * @returns {Promise<void>}
  */
 export async function unlock() {
+  setPlayback();
   if (!ac) {
     const AC = globalThis.AudioContext || globalThis.webkitAudioContext;
     if (!AC) return;

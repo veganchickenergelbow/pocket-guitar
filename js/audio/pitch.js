@@ -1,5 +1,6 @@
 // Pitch detection (YIN) and microphone access.
 import { unlock, getContext } from './synth.js';
+import { setPlayRecord, setPlaybackAfterMic } from './session.js';
 
 const FMIN = 70;
 const FMAX = 1200;
@@ -97,6 +98,7 @@ export async function startMic() {
   const md = typeof navigator !== 'undefined' ? navigator.mediaDevices : undefined;
   if (!md || !md.getUserMedia) throw micError('unsupported', 'Microphone not supported in this browser');
 
+  setPlayRecord(); // iOS: allow capture; paired with setPlaybackAfterMic() on failure/stop
   // Start both inside the same gesture: unlock() creates/resumes the shared context synchronously.
   const unlocking = unlock();
   const asking = md.getUserMedia({
@@ -106,6 +108,7 @@ export async function startMic() {
   try {
     stream = await asking;
   } catch (err) {
+    setPlaybackAfterMic();
     const name = err && err.name;
     if (name === 'NotAllowedError' || name === 'SecurityError' || name === 'PermissionDeniedError') {
       throw micError('denied', 'Microphone permission denied');
@@ -118,15 +121,20 @@ export async function startMic() {
   await unlocking;
   const ctx = getContext();
   if (!ctx) {
+    setPlaybackAfterMic();
     stream.getTracks().forEach((t) => t.stop());
     throw micError('unsupported', 'Web Audio not supported');
   }
   if (ctx.state !== 'running') { try { await ctx.resume(); } catch (e) { /* ignore */ } }
   const source = ctx.createMediaStreamSource(stream);
+  let stopped = false;
   return {
     ctx,
     source,
     stop() {
+      if (stopped) return;
+      stopped = true;
+      setPlaybackAfterMic();
       try { source.disconnect(); } catch (e) { /* ignore */ }
       stream.getTracks().forEach((t) => t.stop());
     },

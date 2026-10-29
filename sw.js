@@ -1,5 +1,5 @@
 // Pocket service worker. Bump VERSION whenever shipped files change.
-const VERSION = 'pocket-v1';
+const VERSION = 'pocket-v2';
 const FONTS = 'pocket-fonts-v1';
 
 // Precache is best-effort: missing files never block install.
@@ -10,7 +10,7 @@ const SHELL = [
   'js/views/today.js', 'js/views/learn.js', 'js/views/ear.js', 'js/views/tools.js',
   'js/views/placement.js', 'js/views/settings.js', 'js/views/metronome-ui.js',
   'js/views/tuner.js', 'js/views/library.js', 'js/views/lesson.js',
-  'js/audio/synth.js', 'js/audio/pitch.js', 'js/audio/listener.js', 'js/audio/metronome.js',
+  'js/audio/synth.js', 'js/audio/pitch.js', 'js/audio/session.js', 'js/audio/listener.js', 'js/audio/metronome.js',
   'js/music/theory.js', 'js/music/voicings.js', 'js/music/voicings-data.js',
   'js/ui/diagram.js', 'js/ui/markdown.js',
   'js/content/curriculum.js',

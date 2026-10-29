@@ -14,6 +14,7 @@ const REQUIRED_FIXED = {
   C7_open: 'x32310', Cadd9_open: 'x32030', Cmaj9_open: 'x32430', Am9_5th: 'x05557',
   Dsus2_open: 'xx0230', Asus2_open: 'x02200', Dsus4_open: 'xx0233', Asus4_open: 'x02230',
   CG_slash: '332010', Fsharpdim7: '2x121x',
+  Dm7_d2: 'xx3535', G7_d2: 'xx3433', Cmaj7_d2: 'xx2413',
 };
 const REQUIRED_TEMPLATES = [
   'maj_r6', 'maj_r5', 'min_r6', 'min_r5', 'maj7_r6', 'maj7_r5', 'm7_r6', 'm7_r5', 'dom7_r6', 'dom7_r5',

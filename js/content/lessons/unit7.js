@@ -34,8 +34,8 @@ Three ingredients:
 
 Chords on beat 1 and the "and" of 2 give the groove its shape. The muted slaps on 2 and 4 hold it down.` },
       { type: 'tip', md: `**Style note.** A lot of groove-based soul and R&B guitar is built on tight, quiet rhythm and space. Fewer notes, played with feel, outlast busy ones.` },
-      { type: 'text', md: `Set the tempo around 70. The metronome clicks on every beat. Count 1 2 3 4 out loud, and feel the slap land on 2 and 4. Play this I, vi, ii, V in C with your new rhythm.` },
-      { type: 'exercise', spec: { kind: 'progression', refs: ['Cmaj7_open', 'Am7_open', 'Dm7_open', 'G7_open'], bpm: 70, beatsPerChord: 4, bars: 8 } },
+      { type: 'text', md: `Set the tempo around 70. The metronome only clicks on **2 and 4**, like a drummer's snare. Put your muted slap right on those clicks and let the chords fall around them. Play this I, vi, ii, V in C with your new rhythm.` },
+      { type: 'exercise', spec: { kind: 'progression', refs: ['Cmaj7_open', 'Am7_open', 'Dm7_open', 'G7_open'], bpm: 70, beatsPerChord: 4, bars: 8, backbeat: true } },
       { type: 'text', md: `Record yourself on your phone once and listen back. The first time you hear yourself sitting properly in the pocket, you will know.` },
     ],
   },

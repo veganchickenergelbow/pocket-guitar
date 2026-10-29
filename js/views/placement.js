@@ -43,7 +43,7 @@ export async function render(root, ctx) {
     ...item.opts.map((o, oi) => {
       const r = h('input', { type: 'radio', name: `q${qi}` });
       r.addEventListener('change', () => { answers[qi] = oi; });
-      return h('label', { class: 'toggle-row' }, h('span', { class: 'mono' }, o), r);
+      return h('label', { class: 'toggle-row' }, h('span', { class: /^[A-G][#b]?( +[A-G][#b]?)*$/.test(o) ? 'mono' : '' }, o), r);
     })));
 
   function showResult() {
