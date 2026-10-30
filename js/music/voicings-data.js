@@ -26,6 +26,10 @@ const RAW = [
   F('CG_slash', 'C', 'maj', '332010', '', 'C/G'), F('Fsharpdim7', 'F#', 'dim7', '2x121x'),
   F('Fmaj7_lowF', 'F', 'maj7', '1x3210'), F('C_E_slash', 'C', 'maj', '032010', '', 'C/E'),
   F('E7_Gsharp', 'E', '7', '4x0430', '', 'E7/G#'),
+  F('Cmaj7s11_open', 'C', 'maj7#11', 'x32002', '', 'Cmaj7#11'),
+  F('Fmaj7s11_open', 'F', 'maj7#11', '1x3200', '', 'Fmaj7#11'),
+  F('FoverG', 'G', '9sus4', '3x3211', '', 'F/G'),
+  F('Gs13sus4', 'G#', '13sus4', '4x4666', '', 'G#13sus4'),
   // Voice-led drop-2 ii-V-I in C on the top four strings (each voice moves a fret at most).
   F('Dm7_d2', 'D', 'm7', 'xx3535', 'xx1314'), F('G7_d2', 'G', '7', 'xx3433', 'xx1211'),
   F('Cmaj7_d2', 'C', 'maj7', 'xx2413', 'xx2413'),
@@ -51,6 +55,9 @@ export const TEMPLATES = [
   T('maj9_r5', 'maj9', 1, [X, 0, -1, 1, 0, X], 2), T('m9_r5', 'm9', 1, [X, 0, -2, 0, 0, X], 3),
   T('dom9_r5', '9', 1, [X, 0, -1, 0, 0, 0], 2), T('dom13_r6', '13', 0, [0, X, 0, 1, 2, X], 1, true),
   T('m11_r6', 'm11', 0, [0, X, 0, 0, -2, X], 3), T('dim7_r6', 'dim7', 0, [0, X, -1, 0, -1, X], 2),
+  T('m9_r6', 'm9', 0, [0, X, 0, 0, 0, 2], 1, true),
+  T('tri_r3', 'maj', 3, [X, X, X, 0, 0, -2], 2), T('tri_r5', 'maj', 5, [X, X, X, 1, 0, 0], 1, true),
+  T('tri_r4', 'maj', 4, [X, X, X, -1, 0, -1], 1),
   T('maj7_d2', 'maj7', 2, [X, X, 0, 2, 2, 2], 1, true), T('m7_d2', 'm7', 2, [X, X, 0, 2, 1, 1], 1, true),
   T('dom7_d2', '7', 2, [X, X, 0, 2, 1, 2], 1, true),
 ];

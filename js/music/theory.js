@@ -91,6 +91,9 @@ export const CHORDS = {
   m11: C('m11', [0, 2, 3, 5, 7, 10], [0, 3, 10, 5]),
   13: C('13', [0, 2, 4, 5, 7, 9, 10], [0, 4, 10, 9]),
   '7sus4': C('7sus4', [0, 5, 7, 10], [0, 5, 10]),
+  'maj7#11': C('maj7#11', [0, 4, 7, 11, 18], [0, 4, 11, 18]),
+  '9sus4': C('9sus4', [0, 5, 7, 10, 14], [0, 5, 10, 14]),
+  '13sus4': C('13sus4', [0, 5, 7, 10, 14, 21], [0, 5, 10, 21]),
 };
 
 export function chordPcs(rootPc, quality) {
@@ -134,8 +137,10 @@ export function analyzeVoicing(frets, rootPc, quality, { rootless = false } = {}
   const def = CHORDS[quality];
   if (!def) throw new Error(`Unknown quality: ${quality}`);
   const present = new Set(voicingMidis(frets).map((m) => mod12(m - rootPc)));
-  const missing = def.required.filter((i) => !(rootless && i === 0) && !present.has(i));
-  const extra = [...present].filter((i) => !def.intervals.includes(i)).map((i) => mod12(rootPc + i));
+  // Compound intervals (14, 18, 21) are compared by pitch class.
+  const allowed = def.intervals.map(mod12);
+  const missing = def.required.filter((i) => !(rootless && i === 0) && !present.has(mod12(i)));
+  const extra = [...present].filter((i) => !allowed.includes(i)).map((i) => mod12(rootPc + i));
   return { ok: missing.length === 0 && extra.length === 0, missing, extra };
 }
 

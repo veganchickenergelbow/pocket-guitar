@@ -23,11 +23,9 @@ export function mount(container, spec, ctx) {
       if (i < qs.length) ask(); else done();
     });
     next.hidden = true;
-    const btns = q.options.map((text, k) => {
-      const b = button(text, 'btn ex-opt', () => pick(k));
-      opts.append(b);
-      return b;
-    });
+    // Show options in a fresh random order each time so answer position can't be memorised.
+    const btns = q.options.map((text, k) => button(text, 'btn ex-opt', () => pick(k)));
+    shuffled(btns).forEach((b) => opts.append(b));
     function pick(k) {
       if (answered) return;
       answered = true;
@@ -58,4 +56,13 @@ export function mount(container, spec, ctx) {
   }
 
   return { destroy() { root.remove(); } };
+}
+
+function shuffled(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }

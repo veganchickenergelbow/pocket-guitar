@@ -1,5 +1,5 @@
 // Pocket service worker. Bump VERSION whenever shipped files change.
-const VERSION = 'pocket-v3';
+const VERSION = 'pocket-v4';
 const FONTS = 'pocket-fonts-v1';
 
 // Precache is best-effort: missing files never block install.
@@ -17,6 +17,7 @@ const SHELL = [
   'js/content/lessons/unit1.js', 'js/content/lessons/unit2.js', 'js/content/lessons/unit3.js',
   'js/content/lessons/unit4.js', 'js/content/lessons/unit5.js', 'js/content/lessons/unit6.js',
   'js/content/lessons/unit7.js', 'js/content/lessons/unit8.js',
+  'js/content/lessons/unit9.js', 'js/content/lessons/unit10.js', 'js/content/lessons/unit11.js', 'js/content/lessons/unit12.js',
   'js/exercises/find-note.js', 'js/exercises/sequence.js', 'js/exercises/chord-arp.js',
   'js/exercises/ear.js', 'js/exercises/quiz.js', 'js/exercises/progression.js',
   'js/exercises/_ui.js', 'js/exercises/_mic.js', 'js/exercises/ear-data.js',

@@ -15,12 +15,13 @@ const REQUIRED_FIXED = {
   Dsus2_open: 'xx0230', Asus2_open: 'x02200', Dsus4_open: 'xx0233', Asus4_open: 'x02230',
   CG_slash: '332010', Fsharpdim7: '2x121x',
   Fmaj7_lowF: '1x3210', C_E_slash: '032010', E7_Gsharp: '4x0430',
+  Cmaj7s11_open: 'x32002', Fmaj7s11_open: '1x3200', FoverG: '3x3211', Gs13sus4: '4x4666',
   Dm7_d2: 'xx3535', G7_d2: 'xx3433', Cmaj7_d2: 'xx2413',
 };
 const REQUIRED_TEMPLATES = [
   'maj_r6', 'maj_r5', 'min_r6', 'min_r5', 'maj7_r6', 'maj7_r5', 'm7_r6', 'm7_r5', 'dom7_r6', 'dom7_r5',
   'm7b5_r6', 'm7b5_r5', 'maj9_r5', 'm9_r5', 'dom9_r5', 'dom13_r6', 'm11_r6', 'dim7_r6',
-  'maj7_d2', 'm7_d2', 'dom7_d2',
+  'maj7_d2', 'm7_d2', 'dom7_d2', 'm9_r6', 'tri_r3', 'tri_r5', 'tri_r4',
 ];
 
 const str = (frets) => frets.map((f) => (f < 0 ? 'x' : String(f))).join('');
@@ -73,6 +74,20 @@ test('resolveVoicing picks the lowest sensible root fret', () => {
   assert.equal(resolveVoicing('C_open').baseFret, 1);
   assert.throws(() => resolveVoicing('nope'));
   assert.throws(() => resolveVoicing('nope@C'));
+});
+
+test('new colour and triad shapes resolve as designed', () => {
+  assert.equal(resolveVoicing('Cmaj7s11_open').name, 'Cmaj7#11');
+  assert.equal(resolveVoicing('Fmaj7s11_open').name, 'Fmaj7#11');
+  assert.equal(resolveVoicing('FoverG').name, 'F/G');
+  assert.equal(resolveVoicing('Gs13sus4').name, 'G#13sus4');
+  assert.equal(str(resolveVoicing('m9_r6@E').frets), '0x0002');
+  assert.equal(str(resolveVoicing('m9_r6@F#').frets), '2x2224');
+  assert.equal(str(resolveVoicing('tri_r3@C').frets), 'xxx553');
+  assert.equal(str(resolveVoicing('tri_r5@C').frets), 'xxx988');
+  assert.equal(str(resolveVoicing('tri_r4@C').frets), 'xxx010');
+  assert.equal(str(resolveVoicing('tri_r4@F').frets), 'xxx565');
+  assert.equal(str(resolveVoicing('tri_r5@G').frets), 'xxx433');
 });
 
 test('listVoicings filters by quality and root', () => {

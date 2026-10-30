@@ -6,7 +6,7 @@ import { chordDiagram } from '../ui/diagram.js';
 const GROUPS = [
   ['Triads', ['maj', 'min', 'dim', 'aug', 'sus2', 'sus4']],
   ['Sevenths', ['maj7', 'm7', '7', 'm7b5', 'dim7', '7sus4']],
-  ['Colour', ['add9', '6', 'm6', '9', 'maj9', 'm9', 'm11', '13']],
+  ['Colour', ['add9', '6', 'm6', '9', 'maj9', 'm9', 'm11', '13', 'maj7#11', '9sus4', '13sus4']],
 ];
 
 function h(tag, props = {}, ...kids) {

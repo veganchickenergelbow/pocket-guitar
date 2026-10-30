@@ -60,6 +60,21 @@ test('chord definitions are consistent', () => {
   assert.equal(chordSymbol(0, 'maj'), 'C'); assert.equal(chordSymbol(9, 'm9'), 'Am9');
 });
 
+test('colour chord qualities: maj7#11, 9sus4, 13sus4', () => {
+  assert.equal(chordSymbol(0, 'maj7#11'), 'Cmaj7#11');
+  assert.equal(chordSymbol(7, '9sus4'), 'G9sus4');
+  assert.equal(chordSymbol(8, '13sus4'), 'G#13sus4');
+  assert.deepEqual(chordPcs(0, 'maj7#11'), [0, 4, 7, 11, 6]);
+  assert.deepEqual(chordPcs(7, '9sus4'), [7, 0, 2, 5, 9]);
+  assert.deepEqual(chordPcs(8, '13sus4'), [8, 1, 3, 6, 10, 5]);
+  // Cmaj7#11 open: C E G B F#
+  assert.equal(analyzeVoicing([-1, 3, 2, 0, 0, 2], 0, 'maj7#11').ok, true);
+  // Without the #11 it is only Cmaj7.
+  assert.deepEqual(analyzeVoicing([-1, 3, 2, 0, 0, 0], 0, 'maj7#11').missing, [18]);
+  assert.equal(analyzeVoicing([3, -1, 3, 2, 1, 1], 7, '9sus4').ok, true);
+  assert.equal(analyzeVoicing([4, -1, 4, 6, 6, 6], 8, '13sus4').ok, true);
+});
+
 const names = (list) => list.map((c) => pcName(c.rootPc) + CHORDS[c.quality].symbol);
 
 test('diatonicChords: C and G, triads and sevenths', () => {

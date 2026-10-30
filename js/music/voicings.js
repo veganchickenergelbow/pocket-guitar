@@ -8,7 +8,7 @@ export const ROOT_NAMES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A',
 
 const FIXED_BY_ID = new Map(FIXED.map((v) => [v.id, v]));
 const TEMPLATE_BY_ID = new Map(TEMPLATES.map((t) => [t.id, t]));
-const STRING_LABEL = ['6th', '5th'];
+const STRING_LABEL = ['6th', '5th', '4th', '3rd', '2nd', '1st'];
 
 function flatsFor(rootName) {
   if (rootName.includes('b')) return true;
@@ -43,7 +43,9 @@ function resolveFixed(v) {
 }
 
 function templateLabel(t, rootFret) {
-  const where = t.rootString === 2 ? 'Drop-2, root on D string' : `Root on ${STRING_LABEL[t.rootString]} string`;
+  const where = t.rootString === 2 ? 'Drop-2, root on D string'
+    : t.id.startsWith('tri_') ? `Top-string triad, root on ${STRING_LABEL[t.rootString]} string`
+      : `Root on ${STRING_LABEL[t.rootString]} string`;
   return `${where} · fret ${rootFret}`;
 }
 

@@ -7,8 +7,12 @@ import { LESSONS as U5 } from './lessons/unit5.js';
 import { LESSONS as U6 } from './lessons/unit6.js';
 import { LESSONS as U7 } from './lessons/unit7.js';
 import { LESSONS as U8 } from './lessons/unit8.js';
+import { LESSONS as U9 } from './lessons/unit9.js';
+import { LESSONS as U10 } from './lessons/unit10.js';
+import { LESSONS as U11 } from './lessons/unit11.js';
+import { LESSONS as U12 } from './lessons/unit12.js';
 
-const ALL = [...U1, ...U2, ...U3, ...U4, ...U5, ...U6, ...U7, ...U8];
+const ALL = [...U1, ...U2, ...U3, ...U4, ...U5, ...U6, ...U7, ...U8, ...U9, ...U10, ...U11, ...U12];
 const BY_ID = new Map(ALL.map((l) => [l.id, l]));
 const ids = (list) => list.map((l) => l.id);
 
@@ -21,6 +25,10 @@ export const UNITS = [
   { id: 6, title: 'Gospel and neo-soul moves', blurb: 'Approach chords, secondary dominants, the minor iv and the church walk-up.', lessons: ids(U6) },
   { id: 7, title: 'Ear and feel', blurb: 'Hear the harmony in context, and make it sit in the pocket.', lessons: ids(U7) },
   { id: 8, title: 'Keys-style soul', blurb: 'The sound of keys-led soul duos, translated to guitar: flat keys, stepwise bass and chords that lean.', lessons: ids(U8) },
+  { id: 9, title: 'Scales and modes', blurb: 'Pentatonics, chord tones and colour tones, and three modes that matter: Dorian, Mixolydian and Lydian.', lessons: ids(U9) },
+  { id: 10, title: 'Harmony toolbox', blurb: 'The circle of fifths, top-string triads, slash chords and borrowed chords from the parallel minor.', lessons: ids(U10) },
+  { id: 11, title: 'Rhythm theory', blurb: 'Subdivisions, syncopation, swing and the laid-back feel that makes slow soul groove.', lessons: ids(U11) },
+  { id: 12, title: 'Moonchild-style neo-soul', blurb: 'Soft, jazzy, Rhodes-flavoured neo-soul: sus dominants, borrowed minor chords and a laid-back 16th-note feel.', lessons: ids(U12) },
 ];
 
 export function getLesson(id) {
