@@ -6,8 +6,9 @@ import { LESSONS as U4 } from './lessons/unit4.js';
 import { LESSONS as U5 } from './lessons/unit5.js';
 import { LESSONS as U6 } from './lessons/unit6.js';
 import { LESSONS as U7 } from './lessons/unit7.js';
+import { LESSONS as U8 } from './lessons/unit8.js';
 
-const ALL = [...U1, ...U2, ...U3, ...U4, ...U5, ...U6, ...U7];
+const ALL = [...U1, ...U2, ...U3, ...U4, ...U5, ...U6, ...U7, ...U8];
 const BY_ID = new Map(ALL.map((l) => [l.id, l]));
 const ids = (list) => list.map((l) => l.id);
 
@@ -19,6 +20,7 @@ export const UNITS = [
   { id: 5, title: 'Voice leading', blurb: 'Make guitar chords move like a keyboard player\'s hands.', lessons: ids(U5) },
   { id: 6, title: 'Gospel and neo-soul moves', blurb: 'Approach chords, secondary dominants, the minor iv and the church walk-up.', lessons: ids(U6) },
   { id: 7, title: 'Ear and feel', blurb: 'Hear the harmony in context, and make it sit in the pocket.', lessons: ids(U7) },
+  { id: 8, title: 'Keys-style soul', blurb: 'The sound of keys-led soul duos, translated to guitar: flat keys, stepwise bass and chords that lean.', lessons: ids(U8) },
 ];
 
 export function getLesson(id) {

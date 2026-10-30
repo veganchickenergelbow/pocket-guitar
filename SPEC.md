@@ -11,7 +11,7 @@ Olivia Dean, MkGee; keys-player influence). Theory is always applied on the fret
 - Frets arrays are low→high, `-1` = muted, `0` = open.
 - Note names: prefer flats for flat keys (F, Bb, Eb, Ab, Db, Gb, Dm, Gm, Cm, Fm), sharps otherwise.
 - Every module is pure where possible; Node-testable logic gets tests in `tests/*.test.mjs`
-  (run with `node --test tests/`). No test framework beyond `node:test` + `node:assert`.
+  (run with `node --test tests/*.test.mjs`). No test framework beyond `node:test` + `node:assert`.
 - All views: `export function render(container, ctx) -> (cleanup?: () => void)`.
 - All exercises: `export function mount(container, spec, ctx) -> { destroy() }`, call
   `ctx.onComplete({ passed: boolean, score?: number })` when finished.

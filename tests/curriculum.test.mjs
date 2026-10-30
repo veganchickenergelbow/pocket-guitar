@@ -31,7 +31,7 @@ test('every unit lesson id exists and matches its unit', () => {
     }
   }
   assert.equal(new Set(allLessons().map((l) => l.id)).size, allLessons().length, 'duplicate lesson ids');
-  assert.equal(allLessons().length, 26);
+  assert.equal(allLessons().length, 32);
 });
 
 test('lessons have required fields and sane minutes', () => {

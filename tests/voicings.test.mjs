@@ -14,6 +14,7 @@ const REQUIRED_FIXED = {
   C7_open: 'x32310', Cadd9_open: 'x32030', Cmaj9_open: 'x32430', Am9_5th: 'x05557',
   Dsus2_open: 'xx0230', Asus2_open: 'x02200', Dsus4_open: 'xx0233', Asus4_open: 'x02230',
   CG_slash: '332010', Fsharpdim7: '2x121x',
+  Fmaj7_lowF: '1x3210', C_E_slash: '032010', E7_Gsharp: '4x0430',
   Dm7_d2: 'xx3535', G7_d2: 'xx3433', Cmaj7_d2: 'xx2413',
 };
 const REQUIRED_TEMPLATES = [
