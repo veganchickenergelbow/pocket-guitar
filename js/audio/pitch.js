@@ -119,7 +119,16 @@ export async function startMic() {
     throw micError('unknown', (err && err.message) || 'Could not open microphone');
   }
   await unlocking;
-  const ctx = getContext();
+  // iOS: a context created earlier under the 'playback' session often hears silence from the mic.
+  // Give the mic its own context, made after capture starts (capture lifts the autoplay block).
+  const AC = globalThis.AudioContext || globalThis.webkitAudioContext;
+  let ctx = null, own = false;
+  if (AC) {
+    try { ctx = new AC(); own = true; } catch (e) { ctx = null; }
+    if (ctx && ctx.state !== 'running') await resumeSoon(ctx);
+    if (ctx && ctx.state !== 'running') { try { ctx.close(); } catch (e) { /* ignore */ } ctx = null; own = false; }
+  }
+  if (!ctx) ctx = getContext(); // fall back to the shared context
   if (!ctx) {
     setPlaybackAfterMic();
     stream.getTracks().forEach((t) => t.stop());
@@ -137,6 +146,15 @@ export async function startMic() {
       setPlaybackAfterMic();
       try { source.disconnect(); } catch (e) { /* ignore */ }
       stream.getTracks().forEach((t) => t.stop());
+      if (own) { try { ctx.close(); } catch (e) { /* ignore */ } }
     },
   };
+}
+
+/** resume() can hang on iOS when it is not allowed, so give up after a short wait. */
+function resumeSoon(ctx) {
+  return Promise.race([
+    ctx.resume().catch(() => {}),
+    new Promise((r) => setTimeout(r, 800)),
+  ]);
 }
