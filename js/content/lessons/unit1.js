@@ -56,7 +56,28 @@ So the rule is: skip one string, go up two frets, or three if you cross the B st
       { type: 'listen', label: 'Hear G and its octave', midis: [43, 55], mode: 'seq' },
       { type: 'text', md: `Why this matters: a chord shape is just a set of notes at fixed distances from the root. The octave tells you where the root repeats, which gives you more places to grab a chord.
 
-Play these pairs, root then octave. Be strict about the octave this time.` },
+### What the numbers mean
+From here on you will see notes like **C3** or **G2**. The letter is the note name. The number says **which octave** it is in, so how high or low it sounds. Each time you pass a **C** going up, the number goes up by one. So C4 is the next C above C3, the same note one octave higher.
+
+Your guitar, from low to high:
+
+- **E2** is the open low E string, your lowest note.
+- **G2** is the low E string, fret 3.
+- **A2** is the open A string (or the low E string, fret 5).
+- **C3** is the A string, fret 3.
+- **G3** is the D string, fret 5.
+- **A3** is the D string, fret 7.
+- **C4** is the G string, fret 5 (or the B string, fret 1). This is **middle C**.
+
+The number changes at C, not at A. That is why the open A string is A2 but the C three frets above it is already C3.` },
+      { type: 'tip', md: `**The pairs below, with the shape:**
+
+- **G2 to G3:** low E fret 3, then D string fret 5.
+- **A2 to A3:** low E fret 5, then D string fret 7.
+- **C3 to C4:** A string fret 3, then G string fret 5.
+
+Low note first, then the high one. Playing G3 when it asks for G2 will not count.` },
+      { type: 'text', md: `Play these pairs, root then octave. Be strict about the octave this time.` },
       { type: 'exercise', spec: { kind: 'sequence', label: 'Octave pairs', notes: ['G2', 'G3', 'A2', 'A3', 'C3', 'C4'], octaveStrict: true } },
     ],
   },
