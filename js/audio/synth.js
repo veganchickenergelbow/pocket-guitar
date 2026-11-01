@@ -26,9 +26,9 @@ function buildGraph() {
   const body = ac.createBiquadFilter(); // wooden body resonance
   body.type = 'peaking'; body.frequency.value = 190; body.Q.value = 0.9; body.gain.value = 3.5;
   const dip = ac.createBiquadFilter(); // tame the 2-4 kHz edge phone speakers exaggerate
-  dip.type = 'peaking'; dip.frequency.value = 2800; dip.Q.value = 0.9; dip.gain.value = -4;
+  dip.type = 'peaking'; dip.frequency.value = 2800; dip.Q.value = 0.9; dip.gain.value = -6;
   const lp = ac.createBiquadFilter();
-  lp.type = 'lowpass'; lp.frequency.value = 4500; lp.Q.value = 0.4;
+  lp.type = 'lowpass'; lp.frequency.value = 3800; lp.Q.value = 0.4;
   const comp = ac.createDynamicsCompressor(); // gentle limiter
   comp.threshold.value = -14; comp.knee.value = 10; comp.ratio.value = 8; comp.attack.value = 0.003; comp.release.value = 0.2;
   const room = ac.createConvolver(); // small room for warmth
@@ -102,10 +102,10 @@ function noteBuffer(midi) {
   let lp = 0;
   let lp2 = 0;
   for (let i = 0; i < N; i++) { lp += 0.3 * (rnd() - lp); lp2 += 0.3 * (lp - lp2); line[i] = lp2; } // fingertip, not pick
-  const pick = Math.max(1, Math.round(N * 0.17)); // pick-position comb
+  const pick = Math.max(1, Math.round(N * 0.22)); // pick-position comb
   const tmp = Float32Array.from(line);
   let mean = 0;
-  for (let i = 0; i < N; i++) { line[i] = tmp[i] - 0.6 * tmp[(i + pick) % N]; mean += line[i]; }
+  for (let i = 0; i < N; i++) { line[i] = tmp[i] - 0.4 * tmp[(i + pick) % N]; mean += line[i]; }
   mean /= N;
   let peak = 1e-9;
   for (let i = 0; i < N; i++) { line[i] -= mean; peak = Math.max(peak, Math.abs(line[i])); }
@@ -125,7 +125,7 @@ function noteBuffer(midi) {
     out[n] = y;
   }
   // Real strings lose their treble faster than their body: a lowpass that closes over the first ~0.5 s.
-  const fStart = Math.min(6000, 2200 + 4 * f), fEnd = Math.max(1000, 3 * f);
+  const fStart = Math.min(4000, 1500 + 3 * f), fEnd = Math.max(800, 2.5 * f);
   let z = 0, a = 0;
   for (let n = 0; n < len; n++) {
     if ((n & 63) === 0) {
@@ -157,11 +157,11 @@ export function playMidi(midi, { when = 0, dur = 1.6, velocity = 0.8 } = {}) {
   src.buffer = noteBuffer(midi);
   const tone = ac.createBiquadFilter();
   tone.type = 'lowpass';
-  tone.frequency.value = 1500 + velocity * 2200; // softer plucks are darker
+  tone.frequency.value = 1100 + velocity * 1600; // softer plucks are darker
   tone.Q.value = 0.3;
   const gain = ac.createGain();
   gain.gain.setValueAtTime(0, t);
-  gain.gain.linearRampToValueAtTime(Math.min(1, velocity), t + 0.004); // no click at the onset
+  gain.gain.linearRampToValueAtTime(Math.min(1, velocity), t + 0.008); // soft onset, no click
   gain.gain.setTargetAtTime(0, t + dur, 0.09);
   src.connect(tone); tone.connect(gain); gain.connect(master);
   const rec = { src, gain };

@@ -43,13 +43,13 @@ export function createMetronome({ bpm = 80, beatsPerBar = 4, onBeat, onSchedule,
   function click(ctx, when, accent) {
     const osc = ctx.createOscillator();
     osc.type = 'triangle';
-    const f = accent ? 1250 : 880;
+    const f = accent ? 1000 : 760;
     osc.frequency.setValueAtTime(f * 1.15, when);
     osc.frequency.exponentialRampToValueAtTime(f, when + 0.012);
     const bp = ctx.createBiquadFilter();
     bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = 1.2;
     const g = ctx.createGain();
-    const peak = accent ? 0.55 : 0.32;
+    const peak = accent ? 0.45 : 0.27;
     g.gain.setValueAtTime(0.0001, when);
     g.gain.exponentialRampToValueAtTime(peak, when + 0.003);
     g.gain.exponentialRampToValueAtTime(0.0001, when + 0.07);

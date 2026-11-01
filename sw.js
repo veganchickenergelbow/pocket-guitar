@@ -1,5 +1,5 @@
 // Pocket service worker. Bump VERSION whenever shipped files change.
-const VERSION = 'pocket-v9';
+const VERSION = 'pocket-v10';
 const FONTS = 'pocket-fonts-v1';
 
 // Precache is best-effort: missing files never block install.
