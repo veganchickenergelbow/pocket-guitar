@@ -22,16 +22,36 @@ export function getContext() {
 
 function buildGraph() {
   master = ac.createGain();
-  master.gain.value = 0.85;
+  master.gain.value = 0.5; // headroom: a six-string strum must not clip
   const body = ac.createBiquadFilter(); // wooden body resonance
   body.type = 'peaking'; body.frequency.value = 190; body.Q.value = 0.9; body.gain.value = 3.5;
-  const dip = ac.createBiquadFilter(); // tame pick-scratch / harshness
-  dip.type = 'peaking'; dip.frequency.value = 2600; dip.Q.value = 0.8; dip.gain.value = -3;
+  const dip = ac.createBiquadFilter(); // tame the 2-4 kHz edge phone speakers exaggerate
+  dip.type = 'peaking'; dip.frequency.value = 2800; dip.Q.value = 0.9; dip.gain.value = -4;
   const lp = ac.createBiquadFilter();
-  lp.type = 'lowpass'; lp.frequency.value = 5200; lp.Q.value = 0.4;
-  const comp = ac.createDynamicsCompressor();
-  comp.threshold.value = -16; comp.ratio.value = 3; comp.attack.value = 0.005; comp.release.value = 0.25;
-  master.connect(body); body.connect(dip); dip.connect(lp); lp.connect(comp); comp.connect(ac.destination);
+  lp.type = 'lowpass'; lp.frequency.value = 4500; lp.Q.value = 0.4;
+  const comp = ac.createDynamicsCompressor(); // gentle limiter
+  comp.threshold.value = -14; comp.knee.value = 10; comp.ratio.value = 8; comp.attack.value = 0.003; comp.release.value = 0.2;
+  const room = ac.createConvolver(); // small room for warmth
+  room.buffer = roomImpulse();
+  const wet = ac.createGain();
+  wet.gain.value = 0.18;
+  master.connect(body); body.connect(dip); dip.connect(lp); lp.connect(comp);
+  lp.connect(room); room.connect(wet); wet.connect(comp);
+  comp.connect(ac.destination);
+}
+
+/** Short, dark, decaying noise burst as a room impulse response. */
+function roomImpulse() {
+  const sr = ac.sampleRate, len = Math.floor(sr * 1.1);
+  const ir = ac.createBuffer(2, len, sr);
+  let seed = 12345;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296 * 2 - 1; };
+  for (let ch = 0; ch < 2; ch++) {
+    const d = ir.getChannelData(ch);
+    let lp = 0;
+    for (let n = 0; n < len; n++) { lp += 0.25 * (rnd() - lp); d[n] = lp * Math.exp(-n / (sr * 0.28)); }
+  }
+  return ir;
 }
 
 /**
@@ -80,7 +100,8 @@ function noteBuffer(midi) {
   const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296 * 2 - 1; };
   const line = new Float32Array(N);
   let lp = 0;
-  for (let i = 0; i < N; i++) { lp += 0.45 * (rnd() - lp); line[i] = lp; } // softened burst
+  let lp2 = 0;
+  for (let i = 0; i < N; i++) { lp += 0.3 * (rnd() - lp); lp2 += 0.3 * (lp - lp2); line[i] = lp2; } // fingertip, not pick
   const pick = Math.max(1, Math.round(N * 0.17)); // pick-position comb
   const tmp = Float32Array.from(line);
   let mean = 0;
@@ -102,7 +123,18 @@ function noteBuffer(midi) {
     line[idx] = ap;
     idx = idx + 1 === N ? 0 : idx + 1;
     out[n] = y;
-    if (Math.abs(y) > max) max = Math.abs(y);
+  }
+  // Real strings lose their treble faster than their body: a lowpass that closes over the first ~0.5 s.
+  const fStart = Math.min(6000, 2200 + 4 * f), fEnd = Math.max(1000, 3 * f);
+  let z = 0, a = 0;
+  for (let n = 0; n < len; n++) {
+    if ((n & 63) === 0) {
+      const fc = fEnd + (fStart - fEnd) * Math.exp(-n / (sr * 0.18));
+      a = 1 - Math.exp(-2 * Math.PI * fc / sr);
+    }
+    z += a * (out[n] - z);
+    out[n] = z;
+    if (Math.abs(z) > max) max = Math.abs(z);
   }
   const fade = Math.floor(sr * 0.3), g = 0.9 / max;
   for (let n = 0; n < len; n++) {
@@ -125,10 +157,11 @@ export function playMidi(midi, { when = 0, dur = 1.6, velocity = 0.8 } = {}) {
   src.buffer = noteBuffer(midi);
   const tone = ac.createBiquadFilter();
   tone.type = 'lowpass';
-  tone.frequency.value = 1800 + velocity * 3000; // softer plucks are darker
+  tone.frequency.value = 1500 + velocity * 2200; // softer plucks are darker
   tone.Q.value = 0.3;
   const gain = ac.createGain();
-  gain.gain.setValueAtTime(Math.min(1, velocity), t);
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(Math.min(1, velocity), t + 0.004); // no click at the onset
   gain.gain.setTargetAtTime(0, t + dur, 0.09);
   src.connect(tone); tone.connect(gain); gain.connect(master);
   const rec = { src, gain };
