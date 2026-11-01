@@ -92,7 +92,7 @@ export function mount(container, spec, ctx) {
       answered = true;
       const ok = key === target;
       if (ok) right += 1;
-      ctx.store?.logEar?.(mode, ok);
+      ctx.store?.logEar?.(spec.logAs || mode, ok);
       btns.forEach(([k, b]) => {
         if (k === target) b.classList.add('right');
         else if (k === key) b.classList.add('wrong');

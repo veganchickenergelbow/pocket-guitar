@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { UNITS, getLesson, allLessons, getNextLesson } from '../js/content/curriculum.js';
-import { INTERVAL_SEMIS, PROGRESSIONS, isValidOption, stackPcs } from '../js/exercises/ear-data.js';
+import { INTERVAL_SEMIS, PROGRESSIONS, QUALITY_LABELS, isValidOption, stackPcs } from '../js/exercises/ear-data.js';
+import { chordPcs } from '../js/music/theory.js';
 
 const BLOCKS = new Set(['text', 'chords', 'fretboard', 'listen', 'exercise', 'tip']);
 const KINDS = new Set(['find-note', 'sequence', 'chord-arp', 'ear', 'quiz', 'progression']);
@@ -116,5 +117,17 @@ test('every ref resolves with resolveVoicing (skipped if music module missing)',
       const v = mod.resolveVoicing(r);
       assert.ok(v && v.frets && v.frets.length === 6, 'no frets');
     }, `${id}: ${r}`);
+  }
+});
+
+test('colour and soul ear sets resolve via chordPcs', () => {
+  for (const q of ['maj7', 'maj9', 'm7', 'm9', '7', '9sus4']) {
+    assert.ok(QUALITY_LABELS[q], q);
+    assert.ok(chordPcs(0, q).length >= 4, q);
+    assert.ok(isValidOption('quality', q));
+  }
+  for (const k of ['ii7-V7-Imaj7', 'Imaj7-vi7-ii7-V7', 'IVmaj7-iv7-Imaj7', 'bII7-Imaj7', 'V7-Imaj7']) {
+    assert.ok(isValidOption('progression', k), k);
+    for (const [semi, q] of PROGRESSIONS[k]) assert.ok(chordPcs(semi, q).length >= 3, k);
   }
 });

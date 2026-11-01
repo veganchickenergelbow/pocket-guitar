@@ -7,6 +7,28 @@ import { createMetronome, backbeatPattern } from '../audio/metronome.js';
 
 const BEATS_PER_BAR = 4;
 
+/** Split a voicing into a low bass note and keys-range comp notes. */
+export function backingNotes(midis) {
+  const sorted = [...midis].sort((a, b) => a - b);
+  let bass = sorted[0];
+  while (bass >= 52) bass -= 12;
+  const keys = sorted.slice(1).map((m) => {
+    while (m < 55) m += 12;
+    while (m > 76) m -= 12;
+    return m;
+  });
+  return { bass, keys: keys.length ? keys : [bass + 12] };
+}
+
+/** Comp hits for one beat of a chord: [{kind:'keys'|'bass', at: beats offset, vel}] */
+export function compHits(beatInChord, per) {
+  const hits = [];
+  if (beatInChord === 0) hits.push({ kind: 'bass', at: 0, vel: 0.5 }, { kind: 'keys', at: 0, vel: 0.3 });
+  if (per >= 4 && beatInChord === 2) hits.push({ kind: 'bass', at: 0, vel: 0.35 });
+  if (per >= 4 && beatInChord === 1) hits.push({ kind: 'keys', at: 0.5, vel: 0.2 });
+  return hits;
+}
+
 export function mount(container, spec, ctx) {
   injectStyle();
   const vs = spec.refs.map((r) => resolveVoicing(r));
@@ -19,6 +41,7 @@ export function mount(container, spec, ctx) {
   let demoTimers = [];
   let metro = null;
   let dead = false;
+  let backing = true;
 
   const root = h('div', 'stack');
   const nowSlot = h('div');
@@ -36,9 +59,16 @@ export function mount(container, spec, ctx) {
   const demoBtn = button('Play demo', 'btn', demo);
   const slower = button('-5', 'btn btn-ghost', () => setTempo(bpm - 5));
   const faster = button('+5', 'btn btn-ghost', () => setTempo(bpm + 5));
+  const backBtn = button('Backing: on', 'btn btn-ghost', () => {
+    backing = !backing;
+    backBtn.textContent = backing ? 'Backing: on' : 'Backing: off';
+    backBtn.setAttribute('aria-pressed', String(backing));
+    if (!backing) ctx.synth?.stopAll?.();
+  });
+  backBtn.setAttribute('aria-pressed', 'true');
   const doneBtn = button('I played it through', 'btn btn-ghost', () => { stopAll(); ctx.onComplete?.({ passed: true }); status.textContent = 'Marked done.'; });
   const r1 = h('div', 'row'); r1.append(playBtn, demoBtn);
-  const r2 = h('div', 'row'); r2.append(slower, tempo, faster);
+  const r2 = h('div', 'row'); r2.append(slower, tempo, faster, backBtn);
   const hint = spec.backbeat ? h('p', 'muted small', 'Clicks on 2 and 4') : null;
   root.append(now, dots, r1, r2, ...(hint ? [hint] : []), status, doneBtn);
   container.append(root);
@@ -68,6 +98,21 @@ export function mount(container, spec, ctx) {
     metro = createMetronome({
       bpm, beatsPerBar: BEATS_PER_BAR,
       pattern: spec.backbeat ? backbeatPattern(BEATS_PER_BAR) : undefined,
+      onSchedule: (b, bar, when) => {
+        if (dead || !backing || !ctx.synth?.playKeys) return;
+        const k = bar * BEATS_PER_BAR + b;
+        if (k >= totalBeats) return;
+        const c = Math.floor(k / per) % n, inChord = k % per;
+        const beatS = 60 / bpm;
+        const { bass, keys } = backingNotes(voicingMidis(vs[c].frets));
+        const now = ctx.synth.getContext?.()?.currentTime ?? 0;
+        for (const hit of compHits(inChord, per)) {
+          const delay = Math.max(0, when + hit.at * beatS - now);
+          const dur = Math.max(0.4, (per - inChord) * beatS - 0.1);
+          if (hit.kind === 'bass') ctx.synth.playBass(bass, { when: delay, dur: Math.min(dur, beatS * 2), velocity: hit.vel });
+          else ctx.synth.playKeys(keys, { when: delay, dur: hit.at ? beatS * 0.8 : dur, velocity: hit.vel });
+        }
+      },
       onBeat: () => {
         if (dead) return;
         if (beat >= totalBeats) { stopAll(); status.textContent = 'That is the pass. Go again or mark it done.'; return; }

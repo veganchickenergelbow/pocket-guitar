@@ -126,3 +126,24 @@ test('markBackedUp stamps today; normalize keeps lastBackup', () => {
   store.importJson(JSON.stringify({ version: 1 }));
   assert.equal(store.get().lastBackup, '');
 });
+
+test('logQuiz: wrong adds misses, right pays them off and deletes at 0', () => {
+  fresh();
+  store.logQuiz('a:1:0', false); store.logQuiz('a:1:0', false);
+  assert.equal(store.get().missed['a:1:0'], 2);
+  store.logQuiz('a:1:0', true);
+  assert.equal(store.get().missed['a:1:0'], 1);
+  store.logQuiz('a:1:0', true);
+  assert.ok(!('a:1:0' in store.get().missed));
+  store.logQuiz('a:1:0', true); // right on something never missed: stays clean
+  assert.deepEqual(store.get().missed, {});
+});
+
+test('missed survives export/import and old backups get {}', () => {
+  fresh(); store.logQuiz('k', false);
+  const json = store.exportJson();
+  store.reset(); store.importJson(json);
+  assert.equal(store.get().missed.k, 1);
+  store.importJson('{"version":1}');
+  assert.deepEqual(store.get().missed, {});
+});

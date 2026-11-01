@@ -138,6 +138,63 @@ export function playMidi(midi, { when = 0, dur = 1.6, velocity = 0.8 } = {}) {
   src.stop(t + dur + 0.6);
 }
 
+
+/**
+ * One enveloped oscillator into `out`, tracked in `active` so stopAll() silences it.
+ */
+function tone(type, freq, t, peak, attack, decayTo, decayTc, dur, out) {
+  const osc = ac.createOscillator();
+  osc.type = type;
+  osc.frequency.value = freq;
+  const gain = ac.createGain();
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.linearRampToValueAtTime(peak, t + attack);
+  gain.gain.setTargetAtTime(peak * decayTo, t + attack, decayTc);
+  gain.gain.setTargetAtTime(0, t + dur, 0.08); // release
+  osc.connect(gain); gain.connect(out);
+  const rec = { src: osc, gain };
+  active.add(rec);
+  osc.onended = () => { active.delete(rec); try { gain.disconnect(); } catch (e) { /* ignore */ } };
+  osc.start(t);
+  osc.stop(t + dur + 0.6);
+}
+
+/**
+ * Soft electric-piano-ish voice (sine + quiet triangle octave up). when = seconds from now.
+ * @param {number[]} midis
+ * @param {{when?: number, dur?: number, velocity?: number}} [opts]
+ */
+export function playKeys(midis, { when = 0, dur = 2, velocity = 0.35 } = {}) {
+  if (!ac || !master) { unlock(); return; }
+  const t = ac.currentTime + Math.max(0, when) + 0.01;
+  const per = Math.min(1, velocity) / Math.sqrt(Math.max(1, midis.length)) * 0.9;
+  const lp = ac.createBiquadFilter();
+  lp.type = 'lowpass'; lp.frequency.value = 1400 + velocity * 2500; lp.Q.value = 0.3;
+  lp.connect(master);
+  for (const m of midis) {
+    const f = 440 * Math.pow(2, (m - 69) / 12);
+    tone('sine', f, t, per, 0.01, 0.35, 0.45, dur, lp);
+    tone('triangle', f * 2, t, per * 0.22, 0.008, 0.1, 0.18, dur, lp);
+  }
+}
+
+/**
+ * Round bass note with a quiet octave-up partial so phone speakers can hear it.
+ * @param {number} midi
+ * @param {{when?: number, dur?: number, velocity?: number}} [opts]
+ */
+export function playBass(midi, { when = 0, dur = 1.5, velocity = 0.5 } = {}) {
+  if (!ac || !master) { unlock(); return; }
+  const t = ac.currentTime + Math.max(0, when) + 0.01;
+  const f = 440 * Math.pow(2, (midi - 69) / 12);
+  const lp = ac.createBiquadFilter();
+  lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 0.5;
+  lp.connect(master);
+  const v = Math.min(1, velocity);
+  tone('sine', f, t, v, 0.008, 0.55, 0.35, dur, lp);
+  tone('triangle', f * 2, t, v * 0.3, 0.008, 0.2, 0.12, dur, lp);
+}
+
 /** @param {number} seconds @returns {Promise<void>} */
 function wait(seconds) {
   return new Promise((resolve) => {

@@ -98,7 +98,7 @@ export function render(container, ctx) {
       };
       return btn(`▶ ${label}`, 'btn', run);
     },
-    exercise: (b) => {
+    exercise: (b, blockIndex) => {
       const idx = exercises.total++;
       const box = h('div', 'card stack');
       const slot = h('div');
@@ -106,6 +106,7 @@ export function render(container, ctx) {
       import(`../exercises/${b.spec.kind}.js`).then((mod) => {
         const exCtx = {
           ...ctx,
+          quizKey: b.spec.kind === 'quiz' ? (i) => `${lesson.id}:${blockIndex}:${i}` : undefined,
           onComplete: (res) => {
             if (res && res.passed) { exercises.passed.add(idx); exercises.skipped.delete(idx); }
             else if (res && res.skipped && !exercises.passed.has(idx)) exercises.skipped.add(idx);
@@ -118,13 +119,13 @@ export function render(container, ctx) {
     },
   };
 
-  for (const block of lesson.blocks) {
+  lesson.blocks.forEach((block, blockIndex) => {
     try {
-      screen.append(blocks[block.type](block));
+      screen.append(blocks[block.type](block, blockIndex));
     } catch (e) {
       screen.append(h('p', 'muted', `Could not show this part (${e.message}).`));
     }
-  }
+  });
 
   // Completion
   const done = h('div', 'card stack');

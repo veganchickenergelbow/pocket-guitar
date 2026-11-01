@@ -26,10 +26,10 @@ export function backbeatPattern(beatsPerBar) {
 }
 
 /**
- * @param {{bpm?: number, beatsPerBar?: number, onBeat?: (beat: number, bar: number) => void, pattern?: string[]}} [opts]
+ * @param {{bpm?: number, beatsPerBar?: number, onBeat?: (beat: number, bar: number) => void, onSchedule?: (beat: number, bar: number, when: number) => void, pattern?: string[]}} [opts]
  * @returns {{start: () => Promise<void>, stop: () => void, setBpm: (n: number) => void, setPattern: (arr: string[]) => void, isRunning: () => boolean}}
  */
-export function createMetronome({ bpm = 80, beatsPerBar = 4, onBeat, pattern } = {}) {
+export function createMetronome({ bpm = 80, beatsPerBar = 4, onBeat, onSchedule, pattern } = {}) {
   let clicks = patternFor(beatsPerBar, pattern);
   let tempo = bpm;
   let running = false;
@@ -65,6 +65,7 @@ export function createMetronome({ bpm = 80, beatsPerBar = 4, onBeat, pattern } =
       const b = beat, r = bar, when = nextTime;
       const kind = clicks[b];
       if (kind !== 'mute') click(ctx, when, kind === 'accent');
+      if (onSchedule) onSchedule(b, r, when); // AudioContext time, for sample-accurate callers
       if (onBeat) {
         const id = setTimeout(() => { timeouts.delete(id); if (running) onBeat(b, r); },
           Math.max(0, (when - ctx.currentTime) * 1000));

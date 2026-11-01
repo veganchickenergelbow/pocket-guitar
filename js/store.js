@@ -12,7 +12,7 @@ function shift(d, days) { const x = new Date(d); x.setDate(x.getDate() + days); 
 
 function defaults() {
   return {
-    version: 1, startUnit: 1, placementDone: false, completed: {}, ear: {},
+    version: 1, startUnit: 1, placementDone: false, completed: {}, ear: {}, missed: {},
     streak: { last: '', days: 0 }, practice: {}, lastBackup: '',
     settings: { a4: 440, leftHanded: false, theme: 'system' },
   };
@@ -23,7 +23,7 @@ function normalize(o) {
   if (!o || typeof o !== 'object') return d;
   return {
     ...d, ...o, version: 1,
-    completed: { ...(o.completed || {}) }, ear: { ...(o.ear || {}) }, practice: { ...(o.practice || {}) },
+    completed: { ...(o.completed || {}) }, ear: { ...(o.ear || {}) }, missed: { ...(o.missed || {}) }, practice: { ...(o.practice || {}) },
     streak: { ...d.streak, ...(o.streak || {}) }, settings: { ...d.settings, ...(o.settings || {}) },
   };
 }
@@ -70,6 +70,14 @@ export function logEar(mode, right) {
     const e = s.ear[mode] || (s.ear[mode] = { right: 0, total: 0 });
     e.total += 1; if (right) e.right += 1;
     touchStreak(s);
+  });
+}
+
+/** Spaced-review bookkeeping: wrong adds a miss, right pays one off (deleted at 0). */
+export function logQuiz(key, right) {
+  return update((s) => {
+    const n = (s.missed[key] || 0) + (right ? -1 : 1);
+    if (n > 0) s.missed[key] = n; else delete s.missed[key];
   });
 }
 

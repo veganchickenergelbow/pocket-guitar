@@ -11,7 +11,7 @@ export const INTERVAL_LABELS = {
 export const QUALITY_LABELS = {
   maj: 'major', min: 'minor', dim: 'diminished', aug: 'augmented', sus2: 'sus2', sus4: 'sus4',
   add9: 'add9', maj7: 'maj7', m7: 'minor 7', '7': 'dominant 7', m7b5: 'm7b5', dim7: 'dim7',
-  maj9: 'maj9', m9: 'minor 9', '9': 'dominant 9', '13': 'dominant 13',
+  maj9: 'maj9', m9: 'minor 9', '9': 'dominant 9', '13': 'dominant 13', '9sus4': '9sus4',
 };
 
 // Progressions as [semitones above key root, chord quality]. Keys are the option strings.
@@ -29,6 +29,11 @@ export const PROGRESSIONS = {
   'i-iv-v-i': [[0, m], [5, m], [7, m], [0, m]],
   'i-iv-V7-i': [[0, m], [5, m], [7, '7'], [0, m]],
   'ii7-V7-Imaj7': [[2, 'm7'], [7, '7'], [0, 'maj7']],
+  // Soul moves set (7th-chord versions, so they do not clash with the triad keys above)
+  'Imaj7-vi7-ii7-V7': [[0, 'maj7'], [9, 'm7'], [2, 'm7'], [7, '7']],
+  'IVmaj7-iv7-Imaj7': [[5, 'maj7'], [5, 'm7'], [0, 'maj7']],
+  'bII7-Imaj7': [[1, '7'], [0, 'maj7']],
+  'V7-Imaj7': [[7, '7'], [0, 'maj7']],
 };
 
 export const DEFAULT_OPTIONS = {

@@ -31,6 +31,7 @@ export function mount(container, spec, ctx) {
       answered = true;
       const ok = k === q.answer;
       if (ok) right += 1;
+      if (typeof ctx.quizKey === 'function') ctx.store?.logQuiz?.(ctx.quizKey(i), ok);
       btns[q.answer].classList.add('right');
       if (!ok) btns[k].classList.add('wrong');
       fb.textContent = (ok ? 'Right. ' : 'Not quite. ') + (q.explain || '');
@@ -38,7 +39,7 @@ export function mount(container, spec, ctx) {
       next.hidden = false;
     }
     root.append(
-      h('div', 'eyebrow', `Question ${i + 1} of ${qs.length}`),
+      h('div', 'eyebrow', q.lessonTitle ? `${q.lessonTitle} · ${i + 1} of ${qs.length}` : `Question ${i + 1} of ${qs.length}`),
       h('div', 'ex-prompt', q.q), opts, fb, next,
     );
   }

@@ -15,3 +15,24 @@ test('backbeat pattern', () => {
   assert.deepEqual(backbeatPattern(4), ['mute', 'accent', 'mute', 'accent']);
   assert.equal(backbeatPattern(6).length, 6);
 });
+
+import { createMetronome } from '../js/audio/metronome.js';
+import { backingNotes, compHits } from '../js/exercises/progression.js';
+
+test('createMetronome accepts onSchedule without starting', () => {
+  const m = createMetronome({ bpm: 90, onSchedule: () => {} });
+  assert.equal(m.isRunning(), false);
+});
+test('backingNotes puts bass low and keys in 55-76', () => {
+  const { bass, keys } = backingNotes([48, 55, 64, 67, 72]);
+  assert.ok(bass < 52);
+  assert.ok(keys.every((k) => k >= 55 && k <= 76));
+  assert.equal(backingNotes([60, 64, 67]).bass, 48);
+});
+test('compHits groove', () => {
+  assert.equal(compHits(0, 4).length, 2);
+  assert.deepEqual(compHits(1, 4).map((h) => h.at), [0.5]);
+  assert.equal(compHits(2, 4)[0].kind, 'bass');
+  assert.equal(compHits(1, 2).length, 0);
+  assert.equal(compHits(2, 2).length, 0);
+});

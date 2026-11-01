@@ -1,4 +1,5 @@
 import { h } from '../dom.js';
+import { buildReview } from '../content/review.js';
 
 // minutes per step for each session length
 const PLANS = {
@@ -21,7 +22,10 @@ function lastPlayAlong(curr, state) {
   return null;
 }
 
-const EAR_LABEL = { interval: 'intervals', quality: 'chord quality', progression: 'progressions' };
+const EAR_LABEL = {
+  interval: 'intervals', quality: 'chord quality', progression: 'progressions',
+  colour: 'colour chords', soul: 'soul moves', harmonise: 'harmonise drill',
+};
 /** Weakest ear mode: under-practised (<5 rounds, fewest first) before lowest accuracy. */
 function earPick(ear = {}) {
   const modes = Object.keys(EAR_LABEL);
@@ -83,9 +87,13 @@ export function render(root, ctx) {
     const earMode = earPick(state.ear);
     let next = null;
     try { next = curr ? curr.getNextLesson(state) : null; } catch { /* ignore */ }
+    let review = [];
+    try { if (curr) review = buildReview(state, curr.allLessons(), 5); } catch { /* ignore */ }
+    const revMin = review.length >= 3 ? 3 : 0; // taken from the lesson time
     const steps = [
       { t: 'Tune up', m: p.tune, go: () => navigate('tools', { tab: 'tuner' }) },
-      next && { t: `Lesson: ${next.title}`, m: p.lesson + (last || !p.play ? 0 : p.play), go: () => navigate('lesson', { id: next.id }) },
+      next && { t: `Lesson: ${next.title}`, m: p.lesson - revMin + (last || !p.play ? 0 : p.play), go: () => navigate('lesson', { id: next.id }) },
+      revMin && { t: `Review: ${review.length} questions`, m: revMin, go: () => navigate('ear', { mode: 'review' }) },
       { t: `Ear set: ${EAR_LABEL[earMode]}`, m: p.ear, go: () => navigate('ear', { mode: earMode }) },
       last && p.play && { t: `Play-along: ${last.title}`, m: p.play, go: () => navigate('lesson', { id: last.id }) },
     ].filter(Boolean);
