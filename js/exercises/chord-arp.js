@@ -33,6 +33,7 @@ export function mount(container, spec, ctx) {
 
   function mark() {
     chipEls.forEach((c, k) => {
+      c.classList.remove('skipped');
       c.classList.toggle('good', k < i);
       c.classList.toggle('active', k === i);
     });
@@ -55,9 +56,9 @@ export function mount(container, spec, ctx) {
     if (finished) return;
     finished = true;
     mic.stop();
-    if (!real) chipEls.forEach((c) => c.classList.add('good'));
+    if (!real) chipEls.forEach((c) => c.classList.add('skipped'));
     mic.setStatus(real ? 'Every string rang true.' : 'Skipped.', real ? 'good' : 'muted');
-    ctx.onComplete?.({ passed: true, score: real ? 1 : undefined });
+    ctx.onComplete?.(real ? { passed: true, score: 1 } : { passed: false, skipped: true });
   }
 
   return { destroy() { finished = true; mic.destroy(); root.remove(); } };

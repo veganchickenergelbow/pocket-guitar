@@ -46,7 +46,9 @@ export function mount(container, spec, ctx) {
     if (finished) return;
     const want = pcOf(list[i]);
     if (n.pc !== want) { mic.setStatus(`Heard ${n.name}. Looking for ${list[i]}.`, 'bad'); return; }
-    if (n.midi < open || n.midi > open + 12) {
+    // Phone mics often report low notes an octave off, so accept n.midi +/- 12 too.
+    const inRange = [n.midi, n.midi - 12, n.midi + 12].some((m) => m >= open && m <= open + 12);
+    if (!inRange) {
       mic.setStatus(`That is a ${list[i]}, but keep it on the ${STRING_NAMES[str]} string, frets 0 to 12.`, 'bad');
       return;
     }
@@ -61,8 +63,9 @@ export function mount(container, spec, ctx) {
     if (finished) return;
     finished = true;
     mic.stop();
+    if (!real) chipEls.forEach((c) => { if (!c.classList.contains('good')) { c.classList.remove('active'); c.classList.add('skipped'); } });
     prompt.textContent = real ? 'All found.' : 'Skipped. Come back to it when you can.';
-    ctx.onComplete?.({ passed: true, score: real ? 1 : undefined });
+    ctx.onComplete?.(real ? { passed: true, score: 1 } : { passed: false, skipped: true });
   }
 
   return { destroy() { finished = true; mic.destroy(); root.remove(); } };

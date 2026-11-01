@@ -15,6 +15,7 @@ const REQUIRED_FIXED = {
   Dsus2_open: 'xx0230', Asus2_open: 'x02200', Dsus4_open: 'xx0233', Asus4_open: 'x02230',
   CG_slash: '332010', Fsharpdim7: '2x121x',
   Fmaj7_lowF: '1x3210', C_E_slash: '032010', E7_Gsharp: '4x0430',
+  G_B_slash: 'x20003', Am_G_slash: '3x2210', F_C_slash: 'x33211',
   Cmaj7s11_open: 'x32002', Fmaj7s11_open: '1x3200', FoverG: '3x3211', Gs13sus4: '4x4666',
   Dm7_d2: 'xx3535', G7_d2: 'xx3433', Cmaj7_d2: 'xx2413',
 };

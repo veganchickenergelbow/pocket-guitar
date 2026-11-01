@@ -16,6 +16,7 @@ export function mount(container, spec, ctx) {
   let bpm = spec.bpm || 80;
   let beat = 0;
   let demoToken = 0;
+  let demoTimers = [];
   let metro = null;
   let dead = false;
 
@@ -81,6 +82,7 @@ export function mount(container, spec, ctx) {
 
   function stopAll() {
     demoToken += 1;
+    demoTimers.forEach(clearTimeout); demoTimers = [];
     if (metro) { metro.stop(); metro = null; }
     ctx.synth?.stopAll?.();
     playBtn.textContent = 'Play along';
@@ -92,21 +94,36 @@ export function mount(container, spec, ctx) {
     stopAll();
     const token = demoToken;
     try { await ctx.synth.unlock(); } catch (_) { return; }
+    if (!ctx.synth.getContext?.()) return;
     demoBtn.textContent = 'Stop demo';
-    const beatMs = 60000 / bpm;
+    // Audio is scheduled up front on the AudioContext clock (no per-beat timer drift);
+    // timers below only move the visuals, aligned to the same schedule.
+    const beatS = 60 / bpm, lead = 0.12, strum = 0.035;
     const passes = spec.bars ? Math.ceil(totalBeats / (per * n)) : 1;
-    for (let p = 0; p < passes && token === demoToken; p++) {
-      for (let c = 0; c < n && token === demoToken; c++) {
-        show(c, 0);
-        for (let b = 0; b < per && token === demoToken; b++) {
-          dotEls.forEach((d, k) => d.classList.toggle('on', k === b % BEATS_PER_BAR));
-          if (b === 0) ctx.synth.playChord(voicingMidis(vs[c].frets), { dur: Math.max(1, per * beatMs / 1000) });
-          else if (b === 2) ctx.synth.playChord(voicingMidis(vs[c].frets), { direction: 'up', velocity: 0.5, dur: 1.2 });
-          await new Promise((r) => setTimeout(r, beatMs));
+    const hit = (c, at, up) => {
+      const midis = voicingMidis(vs[c].frets);
+      (up ? [...midis].reverse() : midis).forEach((m, i) => ctx.synth.playMidi(m, {
+        when: at + i * strum, dur: up ? 1.2 : Math.max(1, per * beatS), velocity: (up ? 0.5 : 0.75) * (0.92 + 0.08 * ((i * 7) % 3) / 2),
+      }));
+    };
+    let k = 0;
+    const last = passes * n * per;
+    for (let p = 0; p < passes; p++) {
+      for (let c = 0; c < n; c++) {
+        for (let b = 0; b < per; b++, k++) {
+          const at = lead + k * beatS;
+          if (b === 0) hit(c, at, false); else if (b === 2) hit(c, at, true);
+          demoTimers.push(setTimeout(() => {
+            if (token !== demoToken) return;
+            if (b === 0) show(c, 0);
+            dotEls.forEach((d, j) => d.classList.toggle('on', j === b % BEATS_PER_BAR));
+          }, at * 1000));
         }
       }
     }
-    if (token === demoToken) { demoBtn.textContent = 'Play demo'; show(0, -1); }
+    demoTimers.push(setTimeout(() => {
+      if (token === demoToken) { demoBtn.textContent = 'Play demo'; show(0, -1); }
+    }, (lead + last * beatS) * 1000));
   }
 
   return { destroy() { dead = true; stopAll(); root.remove(); } };

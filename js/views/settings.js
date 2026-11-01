@@ -1,4 +1,4 @@
-// Settings block shown at the bottom of Today. Returns an element.
+// Settings block, shown in Tools > Settings. Returns an element.
 import { h } from '../dom.js';
 
 const clampA4 = (n) => Math.min(450, Math.max(430, Math.round(Number(n) || 440)));
@@ -25,7 +25,13 @@ export function renderSettings(ctx) {
   const box = h('textarea', { 'aria-label': 'Progress backup JSON', spellcheck: 'false', placeholder: 'Backup JSON appears here. To restore, paste a backup and tap Import.' });
   const say = (msg, bad) => { status.textContent = msg; status.style.color = bad ? 'var(--bad)' : 'var(--good)'; };
 
-  const doExport = () => { box.value = store.exportJson(); box.select(); say('Backup ready. Copy it somewhere safe (Notes, email to yourself).'); };
+  const lastLine = () => `Last backup: ${store.get().lastBackup || 'never'}`;
+  const backupInfo = h('p', { class: 'mono small muted' }, lastLine());
+  const doExport = () => {
+    box.value = store.exportJson(); box.select();
+    store.markBackedUp(); backupInfo.textContent = lastLine();
+    say('Backup ready. Copy it somewhere safe (Notes, email to yourself).');
+  };
   const doCopy = async () => {
     if (!box.value) doExport();
     try { await navigator.clipboard.writeText(box.value); say('Copied to clipboard.'); }
@@ -53,6 +59,7 @@ export function renderSettings(ctx) {
     h('div', { class: 'card stack' },
       h('h3', { class: 'h2' }, 'Back up your progress'),
       h('p', { class: 'muted small' }, 'Your progress lives only on this device. iOS can clear a web app’s data if it goes unused for a while, so export a backup now and then.'),
+      backupInfo,
       box,
       h('div', { class: 'row' },
         h('button', { class: 'btn', type: 'button', onClick: doExport }, 'Export'),

@@ -113,3 +113,16 @@ test('importJson fills missing fields with defaults', () => {
   assert.equal(store.get().settings.a4, 440);
   assert.deepEqual(store.get().completed, {});
 });
+
+test('markBackedUp stamps today; normalize keeps lastBackup', () => {
+  fresh(); at('2026-03-10');
+  assert.equal(store.get().lastBackup, '');
+  store.markBackedUp();
+  assert.equal(store.get().lastBackup, '2026-03-10');
+  const json = store.exportJson();
+  fresh();
+  store.importJson(json);
+  assert.equal(store.get().lastBackup, '2026-03-10');
+  store.importJson(JSON.stringify({ version: 1 }));
+  assert.equal(store.get().lastBackup, '');
+});

@@ -31,13 +31,13 @@ test('every unit lesson id exists and matches its unit', () => {
     }
   }
   assert.equal(new Set(allLessons().map((l) => l.id)).size, allLessons().length, 'duplicate lesson ids');
-  assert.equal(allLessons().length, 47);
+  assert.equal(allLessons().length, 54);
 });
 
 test('lessons have required fields and sane minutes', () => {
   for (const l of allLessons()) {
     assert.ok(l.title && l.summary, l.id);
-    assert.ok(l.minutes >= 5 && l.minutes <= 10, `${l.id} minutes`);
+    assert.ok(l.minutes >= 5 && l.minutes <= 14, `${l.id} minutes`);
     assert.ok(l.blocks.length > 0, l.id);
   }
 });

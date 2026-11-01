@@ -10,7 +10,8 @@ let lastMode = 'quality';
 
 export function render(root, ctx) {
   const { store } = ctx;
-  let mode = lastMode;
+  const want = ctx.params?.mode;
+  let mode = want && MODES[want] ? (lastMode = want) : lastMode;
   let handle = null;
   let gen = 0;
 

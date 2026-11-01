@@ -11,8 +11,9 @@ import { LESSONS as U9 } from './lessons/unit9.js';
 import { LESSONS as U10 } from './lessons/unit10.js';
 import { LESSONS as U11 } from './lessons/unit11.js';
 import { LESSONS as U12 } from './lessons/unit12.js';
+import { LESSONS as U13 } from './lessons/unit13.js';
 
-const ALL = [...U1, ...U2, ...U3, ...U4, ...U5, ...U6, ...U7, ...U8, ...U9, ...U10, ...U11, ...U12];
+const ALL = [...U1, ...U2, ...U3, ...U4, ...U5, ...U6, ...U7, ...U8, ...U9, ...U10, ...U11, ...U12, ...U13];
 const BY_ID = new Map(ALL.map((l) => [l.id, l]));
 const ids = (list) => list.map((l) => l.id);
 
@@ -29,6 +30,7 @@ export const UNITS = [
   { id: 10, title: 'Harmony toolbox', blurb: 'The circle of fifths, top-string triads, slash chords and borrowed chords from the parallel minor.', lessons: ids(U10) },
   { id: 11, title: 'Rhythm theory', blurb: 'Subdivisions, syncopation, swing and the laid-back feel that makes slow soul groove.', lessons: ids(U11) },
   { id: 12, title: 'Moonchild-style neo-soul', blurb: 'Soft, jazzy, Rhodes-flavoured neo-soul: sus dominants, borrowed minor chords and a laid-back 16th-note feel.', lessons: ids(U12) },
+  { id: 13, title: 'Harmonise your songs', blurb: 'How to take a plain chord chart and make it yours: chord families, colour by job, approach chords, bass lines and borrowed colour.', lessons: ids(U13) },
 ];
 
 export function getLesson(id) {

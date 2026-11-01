@@ -26,6 +26,8 @@ const RAW = [
   F('CG_slash', 'C', 'maj', '332010', '', 'C/G'), F('Fsharpdim7', 'F#', 'dim7', '2x121x'),
   F('Fmaj7_lowF', 'F', 'maj7', '1x3210'), F('C_E_slash', 'C', 'maj', '032010', '', 'C/E'),
   F('E7_Gsharp', 'E', '7', '4x0430', '', 'E7/G#'),
+  F('G_B_slash', 'G', 'maj', 'x20003', '', 'G/B'), F('Am_G_slash', 'A', 'm7', '3x2210', '', 'Am/G'),
+  F('F_C_slash', 'F', 'maj', 'x33211', '', 'F/C'),
   F('Cmaj7s11_open', 'C', 'maj7#11', 'x32002', '', 'Cmaj7#11'),
   F('Fmaj7s11_open', 'F', 'maj7#11', '1x3200', '', 'Fmaj7#11'),
   F('FoverG', 'G', '9sus4', '3x3211', '', 'F/G'),

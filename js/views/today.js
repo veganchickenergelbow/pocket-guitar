@@ -1,5 +1,4 @@
 import { h } from '../dom.js';
-import { renderSettings } from './settings.js';
 
 // minutes per step for each session length
 const PLANS = {
@@ -8,16 +7,38 @@ const PLANS = {
   30: { tune: 2, lesson: 14, ear: 6, play: 8 },
 };
 
-function lastCompleted(curr, state) {
+// Most recent completed lesson (curriculum order) that has a play-along (progression) exercise.
+function lastPlayAlong(curr, state) {
   try {
     const ids = curr.allLessons().map((l) => l.id);
-    let best = null;
-    for (const id of Object.keys(state.completed)) {
-      const i = ids.indexOf(id);
-      if (i >= 0 && (best === null || i > best)) best = i;
+    const has = (l) => l.blocks.some((b) => b.type === 'exercise' && b.spec && b.spec.kind === 'progression');
+    for (let i = ids.length - 1; i >= 0; i--) {
+      if (!state.completed[ids[i]]) continue;
+      const l = curr.getLesson(ids[i]);
+      if (l && has(l)) return l;
     }
-    return best === null ? null : curr.getLesson(ids[best]);
-  } catch { return null; }
+  } catch { /* ignore */ }
+  return null;
+}
+
+const EAR_LABEL = { interval: 'intervals', quality: 'chord quality', progression: 'progressions' };
+/** Weakest ear mode: under-practised (<5 rounds, fewest first) before lowest accuracy. */
+function earPick(ear = {}) {
+  const modes = Object.keys(EAR_LABEL);
+  const tot = (m) => (ear[m] && ear[m].total) || 0;
+  const acc = (m) => ear[m].right / ear[m].total;
+  const few = modes.filter((m) => tot(m) < 5).sort((a, b) => tot(a) - tot(b));
+  if (few.length) return few[0];
+  return modes.sort((a, b) => acc(a) - acc(b))[0];
+}
+
+const installed = () => {
+  try { return navigator.standalone === true || matchMedia('(display-mode: standalone)').matches; } catch { return false; }
+};
+function backupStale(last) {
+  if (!last) return true;
+  const t = Date.parse(`${last}T12:00:00`);
+  return !(t > 0) || Date.now() - t > 14 * 86400000;
 }
 
 function greeting() {
@@ -33,9 +54,7 @@ export function render(root, ctx) {
   let alive = true;
 
   const main = h('div', { class: 'screen' });
-  const settings = h('div', { class: 'stack' });
-  root.append(h('div', { class: 'screen' }, main, settings));
-  settings.append(renderSettings(ctx));
+  root.append(h('div', { class: 'screen' }, main));
 
   import('../content/curriculum.js').then((m) => { curr = m; }).catch(() => { curr = false; }).then(() => { if (alive) draw(); });
 
@@ -60,13 +79,14 @@ export function render(root, ctx) {
 
   function sessionCard(state) {
     const p = PLANS[minutes];
-    const last = curr ? lastCompleted(curr, state) : null;
+    const last = curr ? lastPlayAlong(curr, state) : null;
+    const earMode = earPick(state.ear);
     let next = null;
     try { next = curr ? curr.getNextLesson(state) : null; } catch { /* ignore */ }
     const steps = [
       { t: 'Tune up', m: p.tune, go: () => navigate('tools', { tab: 'tuner' }) },
       next && { t: `Lesson: ${next.title}`, m: p.lesson + (last || !p.play ? 0 : p.play), go: () => navigate('lesson', { id: next.id }) },
-      { t: 'Ear set: chord quality', m: p.ear, go: () => navigate('ear') },
+      { t: `Ear set: ${EAR_LABEL[earMode]}`, m: p.ear, go: () => navigate('ear', { mode: earMode }) },
       last && p.play && { t: `Play-along: ${last.title}`, m: p.play, go: () => navigate('lesson', { id: last.id }) },
     ].filter(Boolean);
     return h('div', { class: 'stack' },
@@ -84,6 +104,19 @@ export function render(root, ctx) {
         note && h('span', { class: 'small', style: { color: 'var(--good)' } }, note)));
   }
 
+  // At most one: install nudge, else a stale-backup nudge once there is progress to lose.
+  function protectCard(state) {
+    if (!installed()) {
+      return h('div', { class: 'callout' }, 'Add Pocket to your Home Screen (Share → Add to Home Screen) so Safari keeps your progress.');
+    }
+    if (Object.keys(state.completed).length && backupStale(state.lastBackup)) {
+      return h('div', { class: 'callout stack' },
+        h('p', null, 'Back up your progress'),
+        h('div', null, h('button', { class: 'btn', type: 'button', onClick: () => navigate('tools', { tab: 'settings' }) }, 'Open backup')));
+    }
+    return null;
+  }
+
   function draw() {
     if (!alive) return;
     const state = store.get();
@@ -93,6 +126,7 @@ export function render(root, ctx) {
       !state.placementDone && h('div', { class: 'callout stack' },
         h('p', null, 'Not sure where to start? A two-minute check places you in the right unit.'),
         h('div', null, h('button', { class: 'btn', type: 'button', onClick: () => navigate('placement') }, 'Find my starting point'))),
+      protectCard(state),
       nextCard(state),
       sessionCard(state)].filter(Boolean));
   }

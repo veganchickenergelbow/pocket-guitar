@@ -37,7 +37,7 @@ function findBarre(frets) {
 }
 
 export function chordDiagram(v, { width = 120, showNotes = false, rootPc, highlight } = {}) {
-  const W = 120, H = 142, left = 22, right = 12, top = 28, fh = 20, rows = 5;
+  const W = 132, H = 142, left = 34, right = 12, top = 28, fh = 20, rows = 5;
   const sp = (W - left - right) / 5;
   const sx = (s) => left + s * sp;
   const base = v.baseFret || 1;
@@ -52,7 +52,7 @@ export function chordDiagram(v, { width = 120, showNotes = false, rootPc, highli
   for (let r = 1; r <= rows; r++) svg.append(line(sx(0), top + r * fh, sx(5), top + r * fh, 'var(--muted)', 1, { opacity: 0.5 }));
   for (let s = 0; s < 6; s++) svg.append(line(sx(s), top, sx(s), bottom, 'var(--muted)', 1.2, { opacity: 0.85 }));
   if (base <= 1) svg.append(line(sx(0) - 0.6, top, sx(5) + 0.6, top, 'var(--fg)', 4, { 'stroke-linecap': 'butt' }));
-  else svg.append(label(left - 6, top + fh / 2 + 3, `${base}fr`, 9, 'var(--muted)', 'end'));
+  else svg.append(label(left - 11, top + fh / 2 + 3, `${base}fr`, 9, 'var(--muted)', 'end'));
 
   const rowY = (fret) => top + (fret - base + 0.5) * fh;
   const barre = findBarre(v.frets);

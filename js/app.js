@@ -25,6 +25,8 @@ function highlightTab(tab) {
 
 async function boot() {
   applyTheme();
+  // Ask the browser not to evict our storage (iOS may still wipe uninstalled sites after 7 idle days).
+  try { navigator.storage?.persist?.()?.catch?.(() => {}); } catch { /* unsupported */ }
   store.subscribe(applyTheme);
   const synth = await loadSynth();
   // iOS only lets audio start from a user gesture: unlock on the first touch anywhere.

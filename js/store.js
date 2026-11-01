@@ -13,7 +13,7 @@ function shift(d, days) { const x = new Date(d); x.setDate(x.getDate() + days); 
 function defaults() {
   return {
     version: 1, startUnit: 1, placementDone: false, completed: {}, ear: {},
-    streak: { last: '', days: 0 }, practice: {},
+    streak: { last: '', days: 0 }, practice: {}, lastBackup: '',
     settings: { a4: 440, leftHanded: false, theme: 'system' },
   };
 }
@@ -87,6 +87,9 @@ export function weekMinutes() {
   for (let i = 0; i < 7; i++) sum += state.practice[dateKey(shift(now(), -i))] || 0;
   return sum;
 }
+
+/** Record that the user just exported a backup. */
+export function markBackedUp() { return update((s) => { s.lastBackup = dateKey(); }); }
 
 export function exportJson() { return JSON.stringify(state, null, 2); }
 

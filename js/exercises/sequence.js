@@ -22,6 +22,7 @@ export function mount(container, spec, ctx) {
 
   function mark() {
     chipEls.forEach((c, k) => {
+      c.classList.remove('skipped');
       c.classList.toggle('good', k < i);
       c.classList.toggle('active', k === i);
     });
@@ -31,11 +32,14 @@ export function mount(container, spec, ctx) {
   function onNote(n) {
     if (finished) return;
     const want = notes[i];
-    const ok = strict ? n.midi === noteToMidi(want) : n.pc === pcOf(want);
+    const target = strict ? noteToMidi(want) : 0;
+    // Phone mics often hear low notes an octave up; forgive that for low targets.
+    const octUp = strict && n.midi === target + 12 && target < 52;
+    const ok = strict ? n.midi === target || octUp : n.pc === pcOf(want);
     if (!ok) { mic.setStatus(`Heard ${n.name}. Next is ${want}.`, 'bad'); return; }
     i += 1;
     mark();
-    mic.setStatus(`${n.name}. Good.`, 'good');
+    mic.setStatus(octUp ? `Heard ${n.name}. Counted (phones often hear low notes an octave up).` : `${n.name}. Good.`, 'good');
     if (i >= notes.length) finish(true);
   }
 
@@ -43,9 +47,9 @@ export function mount(container, spec, ctx) {
     if (finished) return;
     finished = true;
     mic.stop();
-    if (!real) { chipEls.forEach((c) => c.classList.add('good')); }
+    if (!real) chipEls.forEach((c) => c.classList.add('skipped'));
     mic.setStatus(real ? 'Complete.' : 'Skipped.', real ? 'good' : 'muted');
-    ctx.onComplete?.({ passed: true, score: real ? 1 : undefined });
+    ctx.onComplete?.(real ? { passed: true, score: 1 } : { passed: false, skipped: true });
   }
 
   return { destroy() { finished = true; mic.destroy(); root.remove(); } };

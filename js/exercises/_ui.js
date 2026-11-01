@@ -32,6 +32,7 @@ export function injectStyle() {
 .ex-now > div{text-align:center}
 .ex-dots{display:flex;gap:var(--space-2);justify-content:center}
 .ex-dot{width:12px;height:12px;border-radius:50%;background:var(--line)}
-.ex-dot.on{background:var(--accent)}`;
+.ex-dot.on{background:var(--accent)}
+.chip.skipped{border-style:dashed;color:var(--muted);opacity:.7}`;
   document.head.appendChild(s);
 }

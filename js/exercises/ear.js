@@ -31,7 +31,7 @@ export function mount(container, spec, ctx) {
   function makeRound() {
     target = options[rnd(options.length)];
     if (mode === 'interval') {
-      const lo = 40 + rnd(13);
+      const lo = 52 + rnd(12); // E3-D#4: phone speakers are weak below that
       const hi = lo + INTERVAL_SEMIS[target];
       play = () => ctx.synth.playSequence([lo, hi], { gap: 0.75, dur: 1.5 });
     } else if (mode === 'quality') {

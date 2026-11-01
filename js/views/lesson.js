@@ -31,7 +31,7 @@ export function render(container, ctx) {
 
   const mounted = [];
   let playToken = 0;
-  const exercises = { total: 0, passed: new Set() };
+  const exercises = { total: 0, passed: new Set(), skipped: new Set() };
   const unit = UNITS.find((u) => u.id === lesson.unit);
   const completed = () => !!(ctx.store.get().completed || {})[lesson.id];
 
@@ -107,7 +107,8 @@ export function render(container, ctx) {
         const exCtx = {
           ...ctx,
           onComplete: (res) => {
-            if (res && res.passed) exercises.passed.add(idx);
+            if (res && res.passed) { exercises.passed.add(idx); exercises.skipped.delete(idx); }
+            else if (res && res.skipped && !exercises.passed.has(idx)) exercises.skipped.add(idx);
             refreshComplete();
           },
         };
@@ -144,7 +145,7 @@ export function render(container, ctx) {
     const all = exercises.total === 0 || exercises.passed.size >= exercises.total;
     doneBtn.className = all ? 'btn btn-primary' : 'btn';
     hint.textContent = exercises.total
-      ? `${exercises.passed.size} of ${exercises.total} exercises done. Mark complete whenever you have played it.`
+      ? `${exercises.passed.size} of ${exercises.total} exercises done${exercises.skipped.size ? `, ${exercises.skipped.size} skipped` : ''}. Mark complete whenever you have played it.`
       : 'Mark complete once you have played it.';
   }
   refreshComplete();

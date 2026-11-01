@@ -1,9 +1,11 @@
 import { h } from '../dom.js';
+import { renderSettings } from './settings.js';
 
 const TABS = [
   { id: 'tuner', label: 'Tuner', load: () => import('./tuner.js') },
   { id: 'metronome', label: 'Metronome', load: () => import('./metronome-ui.js') },
   { id: 'library', label: 'Chords', load: () => import('./library.js') },
+  { id: 'settings', label: 'Settings', load: async () => ({ render: (body, ctx) => { body.append(renderSettings(ctx)); } }) },
 ];
 
 export function render(root, ctx) {
